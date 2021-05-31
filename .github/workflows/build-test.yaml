@@ -21,6 +21,7 @@ jobs:
                   SETUP: .\setup.bat
                   DOWNLOAD: python -m pip install scons
                   PLATFORM: windows
+          fail-fast: false
         steps:
         - uses: actions/checkout@v2
           with: 
