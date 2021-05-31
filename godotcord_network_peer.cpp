@@ -353,7 +353,6 @@ void NetworkedMultiplayerGodotcord::close_connection() {
 	ERR_FAIL_COND_MSG(!_active, "This multiplayer instance is not active at the moment");
 	_connection_status = CONNECTION_DISCONNECTED;
 	_active = false;
-	_lobby_id = 0;
 	_server = false;
 	for (List<Ref<GodotcordPeer>>::Element *E = _peers.front(); E != NULL; E = E->next()) {
 		_network_manager->ClosePeer(E->get()->discord_peer_id);
@@ -364,6 +363,16 @@ void NetworkedMultiplayerGodotcord::close_connection() {
 		ERR_FAIL_COND(result != discord::Result::Ok);
 
 		emit_signal("server_disconnected");
+	});
+	_lobby_id = 0;
+}
+
+void NetworkedMultiplayerGodotcord::delete_lobby() {
+	ERR_FAIL_COND_MSG(!_active, "This multiplayer instance is not active at the moment");
+	ERR_FAIL_COND_MSG(!is_server(), "Can't delete lobby when not lobby owner.");
+
+	_lobby_manager->DeleteLobby(_lobby_id, [this](discord::Result result) {
+		ERR_FAIL_COND_MSG(result != discord::Result::Ok, "Something went wrong while deleting the lobby.")
 	});
 }
 
